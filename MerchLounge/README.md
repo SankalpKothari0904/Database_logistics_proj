@@ -16,3 +16,14 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 ## Dependency Management
 
 The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+
+
+## Statuses of the order
+
+6 constant status for order delivery - 
+1) Order placed. //orderplaced to packed is by seller.
+2) Packed. // packed to shipped also by delivery agent.
+3) Shipped. // delivery agent updates to delivered.
+4) Delivered. // delivered to returned will be by del agent.
+5) Returned. // returned to refunded is by seller.
+6) Refunded.
