@@ -4,11 +4,13 @@ public class Customer {
     private Integer customerID;
     private String customerName;
     private String phNo;
-	public Customer(Integer cusId,String cusname,String phno)
+	private String Address;
+	public Customer(Integer cusId,String cusname,String phno,String Address)
 	{
 		this.customerID=cusId;
 		this.customerName=cusname;
 		this.phNo=phno;
+		this.Address=Address;
 	}
 	public int getCustomerID() {
 		return this.customerID;
