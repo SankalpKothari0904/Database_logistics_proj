@@ -1,5 +1,3 @@
-import Classes.*;
-import java.lang.*;
 import java.sql.*;
 public class DAO_factory {
     public enum TXN_STATUS {COMMIT,ROLLBACK};
@@ -50,6 +48,8 @@ public class DAO_factory {
 		if( dao_interface == null )
 			// dao_interface = new StudentDAO_JDBC( dbconnection );
             // This has to be implemented;
+			dao_interface = new DAO_JDBC(dbconnection);
+
 		return dao_interface;
 	}
 
@@ -78,4 +78,6 @@ public class DAO_factory {
 			}
 		}
 	}
+
+
 }

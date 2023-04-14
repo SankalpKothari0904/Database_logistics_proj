@@ -2,3 +2,4 @@ we have to implement the dao_driver class and then modify the DAO_factory.
 have to do the try except block.
 function updateInventory has to be done.
 Java classes have not been used so we have to see about it.
+

@@ -5,6 +5,15 @@ public class Customer {
     private String customerName;
     private String phNo;
 	private String Address;
+
+	public String getAddress() {
+		return this.Address;
+	}
+
+	public void setAddress(String Address) {
+		this.Address = Address;
+	}
+
 	public Customer(Integer cusId,String cusname,String phno,String Address)
 	{
 		this.customerID=cusId;

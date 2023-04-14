@@ -1,5 +1,5 @@
 create table customer(
-    cusomterID INTEGER PRIMARY KEY,
+    customerID INTEGER PRIMARY KEY,
     customerName VARCHAR(25),
     address VARCHAR(25),
     phNo VARCHAR(25)
