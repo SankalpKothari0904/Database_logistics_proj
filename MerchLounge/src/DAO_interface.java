@@ -2,8 +2,7 @@ import java.util.*;
 
 public interface DAO_interface {
 
-    public void createOrder(Integer CustomerID, Date delDate, ArrayList<Integer> productIds, ArrayList<Integer> quantities);
-    
+    public void createOrder(Integer CustomerID, Date delDate, ArrayList<Integer> productIds, ArrayList<Integer> quantities); 
     // for creating an order ID for the project we can acces the database and find the max orderID and then increment it by one everytime and pass
     // as an argument. 
     // the delivery date is the current system date + 5 days
@@ -27,4 +26,5 @@ public interface DAO_interface {
     public void delUpdateOrderdelDate(Integer delId,Integer OrderID,Date dt);   
     public void orderReturn(Integer CustomerID, Integer productID,Integer OrderID); 
     public void sellerReturnUpdate(Integer sellerID,Integer OrderID,Integer productID,Integer quantity);
+    public void sellerPendingOrders(Integer sellerID);
 }

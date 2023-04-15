@@ -20,6 +20,7 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 
 ## Statuses of the order
 
+
 6 constant status for order delivery - 
 1) Order placed. //orderplaced to packed is by seller.
 2) Packed. // packed to shipped also by delivery agent.
@@ -27,4 +28,3 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 4) Delivered. // delivered to returned will be by del agent.
 5) Returned. // returned to seller.
 6) Refunded.
-

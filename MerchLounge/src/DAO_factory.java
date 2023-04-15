@@ -53,8 +53,7 @@ public class DAO_factory {
 		return dao_interface;
 	}
 
-    public void deactivateConnection( TXN_STATUS txn_status )
-	{
+    public void deactivateConnection( TXN_STATUS txn_status ){
 		// Okay to keep deactivating an already deactivated connection
 		activeConnection = false;
 		if( dbconnection != null ){
@@ -78,6 +77,4 @@ public class DAO_factory {
 			}
 		}
 	}
-
-
 }

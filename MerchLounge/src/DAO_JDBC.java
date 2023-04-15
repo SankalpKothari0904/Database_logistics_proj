@@ -9,7 +9,6 @@ public class DAO_JDBC implements DAO_interface {
     public DAO_JDBC(Connection con){
         this.dbconn = con;
     }
-
     @Override
     public void createOrder(Integer CustomerID, Date delDate, ArrayList<Integer> productIds, ArrayList<Integer> quantities){
         Statement stmt = null;
@@ -53,7 +52,7 @@ public class DAO_JDBC implements DAO_interface {
             pstmt.executeUpdate();
             for (int i=0; i<productIds.size(); i++){
                 if (updateInventory(productIds.get(i), "D", quantities.get(i)) == true){
-                    createOrderDesc(orderID, productIds.get(i), quantities.get(i), "D", "Order Placed");
+                    createOrderDesc(orderID, productIds.get(i), quantities.get(i), "D", "Placed");
                 }
                 
             }
@@ -204,8 +203,7 @@ public class DAO_JDBC implements DAO_interface {
 
     //we have to change this fucntion
     @Override
-    public void sellerUpdateOrderStatus(Integer SellerId,Integer OrderId,Integer prodID,String status)
-    {
+    public void sellerUpdateOrderStatus(Integer SellerId,Integer OrderId,Integer prodID,String status){
         String sql1;
         Statement st = null;
         sql1 = "select sellerID from inventory where sellerID="+SellerId+" and productID="+prodID;
@@ -320,7 +318,7 @@ public class DAO_JDBC implements DAO_interface {
             System.out.println("orderID " + "Name" + " address " + "phoneNumber");
             if(rs.next()==false)
             {
-                System.out.println("Invalid delID");
+                System.out.println("No orders to show");
                 return;
             }
             do{
@@ -439,8 +437,7 @@ public class DAO_JDBC implements DAO_interface {
     }
 
     @Override
-    public boolean updateInventory(Integer ProductID,String type,Integer Quantity)
-    {
+    public boolean updateInventory(Integer ProductID,String type,Integer Quantity){
         if (Quantity <= 0){
             System.out.println("Invalid Transaction");
             return false;
@@ -548,11 +545,8 @@ public class DAO_JDBC implements DAO_interface {
     }
 
     @Override
-    public void sellerReturnUpdate(Integer sellerID,Integer OrderID,Integer productID,Integer quantity)
-    {
-        Statement st=null;
-        PreparedStatement pst=null;
-        
+    public void sellerReturnUpdate(Integer sellerID,Integer OrderID,Integer productID,Integer quantity){
+        Statement st=null;        
         String sql;
         ResultSet rs=null;
         sql = "select o.sellerID from order as o, orderDesc as od where o.sellerID= " + sellerID + " and o.orderID = "+ OrderID+"and od.productID=" + productID;
@@ -571,6 +565,35 @@ public class DAO_JDBC implements DAO_interface {
         }
         catch (Exception e)
         {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void sellerPendingOrders(Integer sellerID){
+        Statement st = null;
+        String sql;
+        sql = "SELECT sellerID from seller where sellerID="+sellerID;
+        try {
+            st = dbconn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if (rs.next() == false){
+                System.out.println("Invalid sellerID");
+                return ;
+            }
+
+            sql = "SELECT od.orderID, od.productID, od.quantity from orderDesc od, inventory in where od.productID = in.productID and od.status = \"Placed\" and in.sellerID = "+sellerID;
+            rs = st.executeQuery(sql);
+
+            System.out.println("OrderID ProductID Quantity");
+            while (rs.next()){
+                Integer orderID = rs.getInt("orderID");
+                Integer productID = rs.getInt("productID");
+                Integer quantity = rs.getInt("quantity");
+                System.out.println(orderID+" "+productID+" "+quantity);
+            }
+            
+        }catch (SQLException e){
             System.out.println(e.getMessage());
         }
     }
