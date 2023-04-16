@@ -1,4 +1,8 @@
-import java.util.*; 
+import java.util.*;
+
+import com.mysql.jdbc.PreparedStatement;
+
+import java.text.SimpleDateFormat;
 import java.time.*;
 
 public class DAO_Driver {
@@ -125,6 +129,18 @@ public class DAO_Driver {
             e.printStackTrace();
         }
     }
+
+    public static void updateDelDate(Integer delID, Integer orderID, Date date){
+        try {
+            dao_factory.activateConnection();
+            DAO_interface daoi = dao_factory.getDAO();
+            daoi.delUpdateOrderdelDate(delID, orderID, date);
+            dao_factory.deactivateConnection(DAO_factory.TXN_STATUS.COMMIT);
+        }catch (Exception e){
+            dao_factory.deactivateConnection(DAO_factory.TXN_STATUS.ROLLBACK);
+            e.printStackTrace();
+        }
+    }
     public static void main(String args[])
     {
         try{
@@ -226,7 +242,7 @@ public class DAO_Driver {
                 }
                 else if(menu == 3)
                 {
-                    System.out.println("Enter 1 to update order staus\nEnter 2 to see pending shipments\nEnter 3 to deliver the order");
+                    System.out.println("Enter 1 to update order staus\nEnter 2 to see pending shipments\nEnter 3 to deliver the order\nEnter 4 to update the delivery date. ");
                     submenu = sc.nextInt();
                     
                     if(submenu==1)
@@ -255,6 +271,25 @@ public class DAO_Driver {
                         System.out.println("Enter the orderID that has to be delivered");
                         Integer orderID = sc.nextInt();
                         orderDelivered(delid,orderID);
+                    }
+                    else if(submenu==4)
+                    {
+                        System.out.println("Enter delID");
+                        Integer did = sc.nextInt();
+                        System.out.println("Please enter orderID");
+                        Integer oid = sc.nextInt();
+                        System.out.println("Enter the delivery date in YYYY-MM-DD format");
+                        String date = sc.next();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        Date date2=null;
+                        try 
+                        {
+                            date2 = dateFormat.parse(date);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        updateDelDate(did,oid,date2);
+                        
                     }
                     else{
                         System.out.println("Invalid option");

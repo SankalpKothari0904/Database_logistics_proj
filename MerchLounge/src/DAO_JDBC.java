@@ -455,11 +455,11 @@ public class DAO_JDBC implements DAO_interface {
             sql = "SELECT delID FROM shipments where delID = "+Integer.toString(delId)+" and orderID = "+Integer.toString(OrderID);
             ResultSet rs = stmt.executeQuery(sql);
 
-            if (rs.next()){
+            if (rs.next()==false){
                 System.out.println("Error - no matching shipment");
             }
             else{
-                sql = "UPDATE order SET delDate = ? where orderID = ?";
+                sql = "UPDATE orders SET delDate = ? where orderID = ?";
                 pstmt = dbconn.prepareStatement(sql);
                 pstmt.setDate(1, new java.sql.Date(dt.getTime()));
                 pstmt.setInt(2, OrderID);
