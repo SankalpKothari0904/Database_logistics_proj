@@ -12,7 +12,7 @@ public interface DAO_interface {
     public void sellerUpdateOrderStatus(Integer SellerId,Integer OrderId,Integer prodID,String status);
     // take a boolean variable called shipment. If the status string is packed, then we add entry in the shipments table, when Delivered, remove
 
-    public void createOrderDesc(Integer OrderID,Integer ProductID,Integer Quantity,String type,String status);
+    public boolean createOrderDesc(Integer OrderID,Integer ProductID,Integer Quantity,String type,String status);
     //called by createOrder to create entries 
 
     public boolean updateInventory(Integer ProductId,String type,Integer quantity);

@@ -18,7 +18,7 @@ public class DAO_JDBC implements DAO_interface {
 
         try {
             stmt = dbconn.createStatement();
-            sql = "SELECT customerID from customers where customerID = "+CustomerID;
+            sql = "SELECT customerID from customer where customerID = "+CustomerID;
             ResultSet rs = stmt.executeQuery(sql);
 
             if (rs.next() == false){
@@ -26,7 +26,7 @@ public class DAO_JDBC implements DAO_interface {
                 return ;
             }
             else{
-                sql = "SELECT max(orderID) as maxID from order";
+                sql = "SELECT max(orderID) as maxID from orders";
                 rs = stmt.executeQuery(sql);
                 if (rs.next() == false){
                     orderID = 1;
@@ -41,7 +41,7 @@ public class DAO_JDBC implements DAO_interface {
         }
         
         PreparedStatement pstmt = null;
-        sql = "INSERT INTO order VALUES (?, ?, ?)";
+        sql = "INSERT INTO orders VALUES (?, ?, ?)";
         
         try {
             pstmt = dbconn.prepareStatement(sql);
@@ -49,14 +49,22 @@ public class DAO_JDBC implements DAO_interface {
             pstmt.setInt(1, orderID);
             pstmt.setInt(2, CustomerID);
             pstmt.setDate(3, new java.sql.Date(delDate.getTime()));
-            pstmt.executeUpdate();
+            boolean flag = false;
             for (int i=0; i<productIds.size(); i++){
                 if (updateInventory(productIds.get(i), "D", quantities.get(i)) == true){
-                    createOrderDesc(orderID, productIds.get(i), quantities.get(i), "D", "Placed");
+                    if (createOrderDesc(orderID, productIds.get(i), quantities.get(i), "D", "Placed") == true){
+                        flag = true;
+                    }
                 }
                 
             }
-            System.out.println("Order placed successfully");
+            if (flag){
+                pstmt.executeUpdate();
+                System.out.println("Order placed successfully");
+            }else{
+                System.out.println("Order could not be placed");
+            }
+            
             
         } catch (SQLException e){
             System.out.println(e.getMessage());
@@ -119,7 +127,7 @@ public class DAO_JDBC implements DAO_interface {
     }
 
     @Override
-    public void createOrderDesc(Integer OrderID,Integer ProductId,Integer Quantity,String type,String status)
+    public boolean createOrderDesc(Integer OrderID,Integer ProductId,Integer Quantity,String type,String status)
     {
         PreparedStatement pst = null;
         String sql;
@@ -139,6 +147,7 @@ public class DAO_JDBC implements DAO_interface {
         } catch (Exception e)
         {
             System.out.println(e.getMessage());
+            return false;
         }
         
         try{
@@ -152,10 +161,12 @@ public class DAO_JDBC implements DAO_interface {
             pst.setString(6,status);
             pst.executeUpdate();
             System.out.println("The databases has been updated successfully\n");
+            
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
+            return false;
         }
         
         try{
@@ -164,7 +175,9 @@ public class DAO_JDBC implements DAO_interface {
 			}
 		} catch (SQLException e) {
  			System.out.println(e.getMessage());
+            return false;
  		} 
+        return true;
     }
 
     @Override
@@ -173,16 +186,16 @@ public class DAO_JDBC implements DAO_interface {
         Statement stmt = null;
         try{
             stmt = dbconn.createStatement();
-            sql = "SELECT customerID from customers where customerID = "+CustomerID;
+            sql = "SELECT customerID from customer where customerID = "+CustomerID;
             ResultSet rs = stmt.executeQuery(sql);
 
             if (rs.next() == false){
                 System.out.println("Invalid customer id");
                 return ;
             }
-            sql = "select or.orderID, or.delDate,ord.productID,ord.quantity,p.productName from"+
-                "order as or, orderDesc as ord, product as p where or.orderID = ord.orderID and"+
-                "ord.productID = p.productID;";
+            sql = "select o.orderID, o.delDate,ord.productID,ord.quantity,p.productName from "+
+                "orders o, orderDesc ord, product p where o.orderID = ord.orderID and "+
+                "ord.productID = p.productID and o.customerID="+CustomerID;
             ResultSet rt = stmt.executeQuery(sql);
             System.out.println("orderID "+"delDate "+"productID "+"quantity "+"productName");
             while(rt.next())
@@ -310,7 +323,7 @@ public class DAO_JDBC implements DAO_interface {
     @Override
     public void seeShipments(Integer delID){
         Statement smt = null;
-        String sql = "select o.orderID as orderID, c.customerName as name, c.address as address, c.phNo as phoneNumber from shipments s, order o, customer c where s.orderID = o.orderID and o.customerID = c.customerID and s.delID = "+Integer.toString(delID);
+        String sql = "select o.orderID as orderID, c.customerName as name, c.address as address, c.phNo as phoneNumber from shipments s, orders o, customer c where s.orderID = o.orderID and o.customerID = c.customerID and s.delID = "+Integer.toString(delID);
 
         try{
             smt = dbconn.createStatement();
@@ -439,7 +452,7 @@ public class DAO_JDBC implements DAO_interface {
     @Override
     public boolean updateInventory(Integer ProductID,String type,Integer Quantity){
         if (Quantity <= 0){
-            System.out.println("Invalid Transaction");
+            System.out.println("ProductID "+ProductID+" has quantity negative");
             return false;
         }
         PreparedStatement pst = null;
@@ -471,6 +484,7 @@ public class DAO_JDBC implements DAO_interface {
                         catch (SQLException e)
                         {
                             System.out.println(e.getMessage());
+                            return false;
                         }
                     }
                 }else if (type == "R"){
@@ -485,16 +499,19 @@ public class DAO_JDBC implements DAO_interface {
                     catch (SQLException e)
                     {
                         System.out.println(e.getMessage());
+                        return false;
                     }
                 }
                 
             }else{
                 System.out.println("ProductID "+ProductID+" invalid");
+                return false;
             }
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
+            return false;
         }
 
         try{
@@ -503,6 +520,7 @@ public class DAO_JDBC implements DAO_interface {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            return false;
         }
         return true;
     }
@@ -515,7 +533,7 @@ public class DAO_JDBC implements DAO_interface {
         
         String sql;
         ResultSet rs=null;
-        sql = "select o.customerID from order as o, orderDesc as od where od.orderID="+OrderID+" and od.orderID=o.orderID and od.productID="+ProductID+" and o.customerID="+CustomerID;
+        sql = "select o.customerID from orders as o, orderDesc as od where od.orderID="+OrderID+" and od.orderID=o.orderID and od.productID="+ProductID+" and o.customerID="+CustomerID;
         
         
         try{
@@ -526,7 +544,7 @@ public class DAO_JDBC implements DAO_interface {
                 System.out.println("Invalid Data");
                 return;
             }
-            sql = "update orderDesc set type= R, status= \"Returned\" where orderID= ? and productID= ?";
+            sql = "update orderDesc set type= \"R\", status= \"Returned\" where orderID= ? and productID= ?";
             pst = dbconn.prepareStatement(sql);
             pst.setInt(1, OrderID);
             pst.setInt(2, ProductID);
@@ -549,7 +567,7 @@ public class DAO_JDBC implements DAO_interface {
         Statement st=null;        
         String sql;
         ResultSet rs=null;
-        sql = "select o.sellerID from order as o, orderDesc as od where o.sellerID= " + sellerID + " and o.orderID = "+ OrderID+"and od.productID=" + productID;
+        sql = "select o.sellerID from orders as o, orderDesc as od where o.sellerID= " + sellerID + " and o.orderID = "+ OrderID+"and od.productID=" + productID;
         try{
             st=dbconn.createStatement();
             rs = st.executeQuery(sql);

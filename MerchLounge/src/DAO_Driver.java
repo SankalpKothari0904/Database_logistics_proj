@@ -147,7 +147,7 @@ public class DAO_Driver {
                     submenu = sc.nextInt();
                     if(submenu==1)
                     {
-                        System.out.println("Please enter youe ID");
+                        System.out.println("Please enter your ID");
                         submenu = sc.nextInt();
                         cusCheckOrder(submenu); 
                     }
@@ -177,7 +177,7 @@ public class DAO_Driver {
                         submenu = sc.nextInt();
                         Integer n1=-1;
                         Integer n2=-1;
-                        System.out.println("Enter the productId and the qty of the order that you wish to return");
+                        System.out.println("Enter the productId and the orderID of the order that you wish to return");
                         n1=sc.nextInt();
                         n2=sc.nextInt();
                         cusOrderReturn(submenu, n1, n2);
