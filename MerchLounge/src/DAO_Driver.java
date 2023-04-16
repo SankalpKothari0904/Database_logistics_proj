@@ -190,11 +190,12 @@ public class DAO_Driver {
                 {
                     System.out.println("Enter 1 to update order staus\nEnter 2 to see pending orders\nEnter 3 to see your inventory");
                     submenu = sc.nextInt();
-                    System.out.println("Enter your SellerID");
-                    Integer sellid=-1;
-                    sellid = sc.nextInt();
+                    
                     if(submenu==1)
                     {
+                        System.out.println("Enter your SellerID");
+                        Integer sellid=-1;
+                        sellid = sc.nextInt();
                         System.out.println("Enter the orderID for which you wish to update the status");
                         Integer orderID = sc.nextInt();
                         System.out.println("Enter the prodID for which you wish to update the status");
@@ -204,11 +205,18 @@ public class DAO_Driver {
                         sellerUpdateOrderStatus(sellid, orderID, prodID, st);
                     }
                     else if(submenu==2)
-                    {
+                    {   
+                        System.out.println("Enter your SellerID");
+                        Integer sellid=-1;
+                        sellid = sc.nextInt();
+
                         seePendingOrders(sellid);
                     }
                     else if(submenu==3)
                     {
+                        System.out.println("Enter your SellerID");
+                        Integer sellid=-1;
+                        sellid = sc.nextInt();
                         sellerSeesInventory(sellid);
                     }
                     else{
@@ -220,11 +228,12 @@ public class DAO_Driver {
                 {
                     System.out.println("Enter 1 to update order staus\nEnter 2 to see pending shipments\nEnter 3 to deliver the order");
                     submenu = sc.nextInt();
-                    System.out.println("Enter your deliveryID");
-                    Integer delid = -1;
-                    delid = sc.nextInt();
+                    
                     if(submenu==1)
                     {
+                        System.out.println("Enter your deliveryID");
+                        Integer delid = -1;
+                        delid = sc.nextInt();
                         System.out.println("Enter the orderID to update the status of");
                         Integer orderID = sc.nextInt();
                         System.out.println("Enter status");
@@ -233,10 +242,16 @@ public class DAO_Driver {
                     }
                     else if(submenu==2)
                     {
+                        System.out.println("Enter your deliveryID");
+                        Integer delid = -1;
+                        delid = sc.nextInt();
                         delAgentSeesOrders(delid);
                     }
                     else if(submenu==3)
                     {
+                        System.out.println("Enter your deliveryID");
+                        Integer delid = -1;
+                        delid = sc.nextInt();
                         System.out.println("Enter the orderID that has to be delivered");
                         Integer orderID = sc.nextInt();
                         orderDelivered(delid,orderID);

@@ -49,6 +49,7 @@ public class DAO_JDBC implements DAO_interface {
             pstmt.setInt(1, orderID);
             pstmt.setInt(2, CustomerID);
             pstmt.setDate(3, new java.sql.Date(delDate.getTime()));
+            pstmt.executeUpdate();
             boolean flag = false;
             for (int i=0; i<productIds.size(); i++){
                 if (updateInventory(productIds.get(i), "D", quantities.get(i)) == true){
@@ -59,9 +60,12 @@ public class DAO_JDBC implements DAO_interface {
                 
             }
             if (flag){
-                pstmt.executeUpdate();
                 System.out.println("Order placed successfully");
             }else{
+                sql = "DELETE FROM orders where orderID = ?";
+                pstmt = dbconn.prepareStatement(sql);
+                pstmt.setInt(1, orderID);
+                pstmt.executeUpdate();
                 System.out.println("Order could not be placed");
             }
             
@@ -269,13 +273,28 @@ public class DAO_JDBC implements DAO_interface {
             if(delid==-1)
             {
                 Scanner input = new Scanner(System.in);
-                System.out.println("Enter the delivery agent id: ");
-                delid = input.nextInt();
+
+                while (true){
+                    
+                    System.out.println("Enter the delivery agent id: ");
+                    delid = input.nextInt();
+                    String sql2 = "select delID from deliveryAgent where delID = "+delid;
+                    Statement s;
+                    s = dbconn.createStatement();
+                    ResultSet rt = s.executeQuery(sql2);
+                    if (rt.next()){
+                        break;
+                    }else{
+                        System.out.println("Invalid delivery ID, try again");
+                    }
+                }
+                
                 System.out.println("Enter mode of shipment: ");
                 String mode = input.nextLine();
+                mode = input.nextLine();
                 addShipment(delid, OrderId, mode);
                 System.out.println("Database updated successfully");
-                input.close();
+                // input.close();
             }
             else
             {
@@ -302,13 +321,14 @@ public class DAO_JDBC implements DAO_interface {
         try {
             stmt = dbconn.createStatement();
             String sql;
-            sql = "SELECT in.productID, p.productName, in.quantity from inventory in, product p where in.productID = p.productID and in.sellerID = " + Integer.toString(sellerID);
+            sql = "SELECT i.productID, p.productName, i.quantity from inventory i, product p where i.productID = p.productID and i.sellerID = " +sellerID;
             ResultSet rs = stmt.executeQuery(sql);
-            System.out.println("productID productName quantity");
-            if (rs.next()){
+            
+            if (rs.next()==false){
                 System.out.println("Invalid sellerID");
                 return;
             }
+            System.out.println("productID productName quantity");
             do{
                 Integer productID = rs.getInt("productID");
                 String name = rs.getString("productName");
@@ -323,17 +343,29 @@ public class DAO_JDBC implements DAO_interface {
     @Override
     public void seeShipments(Integer delID){
         Statement smt = null;
-        String sql = "select o.orderID as orderID, c.customerName as name, c.address as address, c.phNo as phoneNumber from shipments s, orders o, customer c where s.orderID = o.orderID and o.customerID = c.customerID and s.delID = "+Integer.toString(delID);
+        String sql = "select delID from deliveryAgent where delID = "+delID;
+        try{
+            smt = dbconn.createStatement();
+            ResultSet rs = smt.executeQuery(sql);
+            if (rs.next() == false){
+                System.out.println("Invalid delivery ID");
+                return;
+            }
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        sql = "select o.orderID as orderID, c.customerName as name, c.address as address, c.phNo as phoneNumber from shipments s, orders o, customer c where s.orderID = o.orderID and o.customerID = c.customerID and s.delID = "+Integer.toString(delID);
 
         try{
             smt = dbconn.createStatement();
             ResultSet rs = smt.executeQuery(sql);
-            System.out.println("orderID " + "Name" + " address " + "phoneNumber");
+
             if(rs.next()==false)
             {
                 System.out.println("No orders to show");
                 return;
             }
+            System.out.println("orderID " + "Name" + " address " + "phoneNumber");
             do{
                 Integer orderid = rs.getInt("orderID");
                 String custname = rs.getString("name");
@@ -383,12 +415,12 @@ public class DAO_JDBC implements DAO_interface {
             sql = "SELECT delID FROM shipments where delID = "+Integer.toString(delId)+" and orderID = "+Integer.toString(OrderID);
             ResultSet rs = stmt.executeQuery(sql);
 
-            if (rs.next()){
+            if (rs.next()==false){
                 System.out.println("Error - no matching shipment");
                 return;
             }
 
-            sql = "UPDATE order SET status = ? where orderID = ?";
+            sql = "UPDATE orderDesc SET status = ? where orderID = ?";
             pstmt = dbconn.prepareStatement(sql);
             pstmt.setString(1, status);
             pstmt.setInt(2, OrderID);
@@ -494,7 +526,7 @@ public class DAO_JDBC implements DAO_interface {
                         pst.setInt(1, Quantity);
                         pst.setInt(2, ProductID);
                         pst.executeUpdate();
-                        System.out.println("Database updated successfully");
+                        // System.out.println("Database updated successfully");
                     }
                     catch (SQLException e)
                     {
@@ -600,7 +632,7 @@ public class DAO_JDBC implements DAO_interface {
                 return ;
             }
 
-            sql = "SELECT od.orderID, od.productID, od.quantity from orderDesc od, inventory in where od.productID = in.productID and od.status = \"Placed\" and in.sellerID = "+sellerID;
+            sql = "SELECT od.orderID, od.productID, od.quantity from orderDesc od, inventory i where od.productID = i.productID and od.status = \"Placed\" and i.sellerID = "+sellerID;
             rs = st.executeQuery(sql);
 
             System.out.println("OrderID ProductID Quantity");
