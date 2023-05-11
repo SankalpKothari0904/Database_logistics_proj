@@ -4,7 +4,8 @@
     "java.project.referencedLibraries": {
         "include": [
             "lib/**/*.jar",
-            "/home/srinivasan/Downloads/mysql-connector.jar"
+            "/home/srinivasan/Downloads/mysql-connector.jar",
+            "/home/siddharth/Downloads/mysql-connector.jar"
         ],
         "exclude": [
             "lib/mysql-connector.jar"
